@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+    <title>Wiggle.js Demp -By dayinji</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <style>
+        html,body {
+            background: #2a2a2a;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #canvas {
+            width: 100%;
+            height: 100%;
+            margin: 0 auto;
+            background: #2a2a2a;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="900" height="500">
+    </canvas>
+</body>
+<script src="../Wiggle.js"></script>
+<script>
+    var canvas = document.getElementById('canvas');
+    var w = document.body.clientWidth;
+    var h = document.body.clientHeight;
+    console.log(w, h);
+    canvas.style.width = "" + w + "px";
+    canvas.style.height = "" + h + "px";
+    canvas.width = w;
+    canvas.height = h;
+    var ctx = null;
+    if(canvas.getContext) {
+        ctx = canvas.getContext('2d');
+    }
+
+    var amp = 250;
+    var freq = 2;
+    var wiggle = new Wiggle(amp, freq, ctx, w, h);
+    var x = 0;
+    var ppoint = [0, 0];
+    function anim() {
+        ctx.strokeStyle='rgba(18, 252, 255, 0.1)';
+        ctx.beginPath();
+        ctx.arc(w/2, h/2, amp/2, 0, 360);
+        ctx.stroke();
+        ctx.closePath();
+        ctx.fillStyle = "rgba(46, 46, 46, 0.1)";
+        ctx.fillRect(0, 0, w, h);
+        var num = wiggle.getNum();
+        ctx.strokeStyle='#fff';
+        ctx.lineWidth=2;
+        ctx.lineCap='square';
+        ctx.beginPath();
+        ctx.moveTo(w/2+ppoint[0], h/2+ppoint[1]);
+        ctx.lineTo(w/2+num[0], h/2+num[1]);
+        ctx.stroke();
+        ctx.closePath();
+        ppoint[0] = num[0];
+        ppoint[1] = num[1];
+        requestAnimationFrame(anim);
+    }
+    anim();
+    canvas.addEventListener("touchmove", touchMove, false);
+    canvas.addEventListener("mousemove", mouseMove, false);
+    function touchMove(e) {
+        e.preventDefault();
+        var el = document.getElementsByTagName("canvas")[0];
+        var ctx = el.getContext("2d");
+        var touches = e.changedTouches;
+        amp = dist([w/2, h/2], [touches[0].pageX, touches[0].pageY])*2;
+        wiggle.amp = amp;
+    }
+    function mouseMove(e) {
+        e.preventDefault();
+        var el = document.getElementsByTagName("canvas")[0];
+        var ctx = el.getContext("2d");
+        var touches = e.changedTouches;
+        amp = dist([w/2, h/2], [e.pageX,e.pageY])*2;
+        wiggle.amp = amp;
+    }
+
+    function dist(p1 ,p2) {
+        var x = p1[0]-p2[0];
+        var y = p1[1]-p2[1];
+        return Math.sqrt(x*x + y*y);
+    }
+</script>
+</html>
