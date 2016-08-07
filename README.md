@@ -8,7 +8,7 @@ Include Wiggle.js file in your html
     
 New a Wiggle obecjt and set amp and freq
 
-    var wiggle = new Wiggle(200, 1); // Wiggle 200px per 1s
+    var wiggle = new Wiggle(200, 1); // Wiggle 200px one time per second
     var num = wiggle.getNum();
     
 ##Demo
