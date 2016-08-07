@@ -1,7 +1,7 @@
 ;(function () {
-	var Wiggle = function(amp, freq) {
+	var Wiggle = function(amp, freq, ctx, w, h) {
 		this.amp = amp;
-		this.freq = freq;
+		this.interval = 1000/freq;
 		this.dimen = 2;
 		this.startTime = Date.now();
 		this.p0 = [];
@@ -14,11 +14,12 @@
 			this.p2[i] = (Math.random()-0.5)*this.amp;
 			this.p3[i] = (Math.random()-0.5)*this.amp;
 		}
+		this.ctx = ctx;
+		this.w = w;
+		this.h = h;
 	};
 	Wiggle.prototype.getNum = function() {
-		if (this.freq == 0 || this.amp == 0)
-			return [0, 0];
-		var t = (Date.now() - this.startTime) / 1000 * this.freq;
+		var t = (Date.now() - this.startTime) / this.interval;
 		if (t >= 1) {
 			this.update();
 			t = 0;
@@ -52,11 +53,46 @@
 		this.p2[1] = this.p3[1] + Math.sin(randNum)*p2Dist;
 
 		this.startTime = Date.now();
+
+
+
+        this.ctx.fillStyle = "#ff4444";
+        this.ctx.beginPath();
+        this.ctx.arc(this.p0[0]+this.w/2, this.p0[1]+this.h/2, 3, 0, 360);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(this.p1[0]+this.w/2, this.p1[1]+this.h/2, 3, 0, 360);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(this.p2[0]+this.w/2, this.p2[1]+this.h/2, 3, 0, 360);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(this.p3[0]+this.w/2, this.p3[1]+this.h/2, 3, 0, 360);
+        this.ctx.closePath();
+        this.ctx.fill();
+
+        this.ctx.strokeStyle='#888888';
+		this.ctx.lineWidth=1;
+		this.ctx.lineCap='square';
+		this.ctx.beginPath();
+		this.ctx.moveTo(this.p0[0]+this.w/2, this.p0[1]+this.h/2);
+		this.ctx.lineTo(this.p1[0]+this.w/2, this.p1[1]+this.h/2);
+		this.ctx.stroke();
+		this.ctx.closePath();
+		this.ctx.beginPath();
+		this.ctx.moveTo(this.p2[0]+this.w/2, this.p2[1]+this.h/2);
+		this.ctx.lineTo(this.p3[0]+this.w/2, this.p3[1]+this.h/2);
+		this.ctx.stroke();
+		this.ctx.closePath();
 	};
 	function dist(p1 ,p2) {
 		var x = p1[0]-p2[0];
 		var y = p1[1]-p2[1];
 		return Math.sqrt(x*x + y*y);
 	}
+
 	window['Wiggle'] = Wiggle;
 })();

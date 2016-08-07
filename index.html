@@ -23,7 +23,7 @@
     <canvas id="canvas" width="900" height="500">
     </canvas>
 </body>
-<script src="../Wiggle.js"></script>
+<script src="wiggle.js"></script>
 <script>
     var canvas = document.getElementById('canvas');
     var w = document.body.clientWidth;
@@ -62,25 +62,16 @@
         ctx.closePath();
         ppoint[0] = num[0];
         ppoint[1] = num[1];
-        requestAnimationFrame(anim);
+        requestAnimationFrame(log);
     }
     anim();
     canvas.addEventListener("touchmove", touchMove, false);
-    canvas.addEventListener("mousemove", mouseMove, false);
     function touchMove(e) {
         e.preventDefault();
         var el = document.getElementsByTagName("canvas")[0];
         var ctx = el.getContext("2d");
         var touches = e.changedTouches;
         amp = dist([w/2, h/2], [touches[0].pageX, touches[0].pageY])*2;
-        wiggle.amp = amp;
-    }
-    function mouseMove(e) {
-        e.preventDefault();
-        var el = document.getElementsByTagName("canvas")[0];
-        var ctx = el.getContext("2d");
-        var touches = e.changedTouches;
-        amp = dist([w/2, h/2], [e.pageX,e.pageY])*2;
         wiggle.amp = amp;
     }
 
