@@ -50,7 +50,7 @@
     pWiggles = [],
     sphere;
 
-    var line1, line2, point1, point2;
+    var line1, line2, pcontrol;
     var p0 = [0, 0, 0], p1 = [0, 0, 0], p2 = [0, 0, 0], p3 = [0, 0, 0];
     var controlPointMaterial;
 
@@ -92,13 +92,9 @@
 
         var PI2 = Math.PI * 2;
 
-        controlPointMaterial = new THREE.SpriteMaterial( {
+        controlPointMaterial = new THREE.PointsMaterial( {
             color: 0xff0000,
-            program: function ( context ) {
-                context.beginPath();
-                context.arc( 0, 0, 16, 0, PI2, true );
-                context.fill();
-            }
+            size: 5
         } );
 
         var material = new THREE.SpriteMaterial( {
@@ -193,12 +189,10 @@
         if (wiggle.p1[0] != p1[0]) {
             scene.remove( line1 );
             scene.remove( line2 );
-            scene.remove( point1 );
-            scene.remove( point2 );
+            scene.remove( pcontrol );
             line1 = null;
             line2 = null;
-            point1 = null;
-            point2 = null;
+            pcontrol = null;
             var gline1 = new THREE.Geometry();
             var gline1Point0 = new THREE.Vector3( wiggle.p0[0], wiggle.p0[1], wiggle.p0[2] );
             var gline1Point1 = new THREE.Vector3( wiggle.p1[0], wiggle.p1[1], wiggle.p1[2] );
@@ -212,16 +206,11 @@
             line2 = new THREE.Line( gline2, new THREE.LineBasicMaterial( { linewidth: 1, color:0xffffff , opacity: 0.5 } ) );
             scene.add(line2);
 
-            point1 = new THREE.Sprite( controlPointMaterial );
-            point1.position.x = wiggle.p1[0];
-            point1.position.y = wiggle.p1[1];
-            point1.position.z = wiggle.p1[2];
-            scene.add( point1 );
-            point2 = new THREE.Sprite( controlPointMaterial );
-            point2.position.x = wiggle.p2[0];
-            point2.position.y = wiggle.p2[1];
-            point2.position.z = wiggle.p2[2];
-            scene.add( point2 );
+            var cps = new THREE.Geometry();
+            cps.vertices.push(new THREE.Vector3(wiggle.p1[0], wiggle.p1[1], wiggle.p1[2]));
+            cps.vertices.push(new THREE.Vector3(wiggle.p2[0], wiggle.p2[1], wiggle.p2[2]));
+            pcontrol = new THREE.Points(cps, controlPointMaterial);
+            scene.add( pcontrol );
         } 
 
 
