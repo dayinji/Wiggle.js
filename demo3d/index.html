@@ -166,7 +166,7 @@
 
         scene.remove( sphere );
         var geometry1 = new THREE.SphereGeometry( amp/2, 12, 12, 0 , Math.PI*2 );
-        var material = new THREE.MeshLambertMaterial ( {shading: THREE.FlatShading, wireframe :true, opacity: 0.3, transparent:true, wireframeLinewidth: 6, } );
+        var material = new THREE.MeshLambertMaterial ( {shading: THREE.FlatShading, wireframe :true, opacity: 0.3, transparent:true, wireframeLinewidth: 2, } );
         sphere = new THREE.Mesh( geometry1, material );
         scene.add( sphere );
 
