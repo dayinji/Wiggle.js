@@ -1,0 +1,243 @@
+<!doctype html>
+<html>
+<head>
+    <title>Wiggle.js Demp -By dayinji</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <style>
+        html,body {
+            background: #2a2a2a;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #canvas {
+            width: 100%;
+            height: 100%;
+            margin: 0 auto;
+            background: #2a2a2a;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+</body>
+<script src="Wiggle.js"></script>
+<script src="js/three.min.js"></script>
+<script src="js/CanvasRenderer.js"></script>
+<script src="js/Projector.js"></script>
+<script src="js/stats.min.js"></script>
+<script>
+    var amp = 300;
+    var wiggle = new Wiggle(amp, 2, 3);
+    var pPos = [0, 0, 0];
+
+
+    var mouseX = 0, mouseY = 0,
+    cameraDistance = 500,
+
+    windowHalfX = window.innerWidth / 2,
+    windowHalfY = window.innerHeight / 2,
+
+    camera, scene, renderer,
+    //particle,
+    verticeNum = 100,
+    vertices = [],
+    colors = [],
+    lights = [],
+    line,
+    particles = [],
+    pWiggles = [],
+    sphere;
+
+    var startTime = Date.now();
+
+    initColors();
+    init();
+    animate();
+
+    function initColors() {
+        for (var i = 0 ; i < verticeNum ; i++) {
+            var factor = i/verticeNum;
+            var r = Math.floor(249 + (0 - 249)*factor);
+            var g = Math.floor(75 + (255 - 75)*factor);
+            var b = Math.floor(75 + (182 - 75)*factor);
+            var color = new THREE.Color("rgb(" + r +", " + g +", " + b + ")");
+            colors.push( color );
+        }
+    }
+
+    function init() {
+        stats = new Stats();
+        document.body.appendChild(stats.dom);
+
+        var container, separation = 100, amountX = 50, amountY = 50;
+
+        container = document.createElement('div');
+        document.body.appendChild(container);
+
+        camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+        camera.position.z = 100;
+
+        scene = new THREE.Scene();
+
+        
+        lights[ 0 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+        lights[ 0 ].position.set( 0, 0, 0 );
+        scene.add( lights[ 0 ] );
+
+        var PI2 = Math.PI * 2;
+
+        var material = new THREE.SpriteMaterial( {
+
+            color: 0xffffff,
+            program: function ( context ) {
+
+                context.beginPath();
+                context.arc( 0, 0, 3, 0, PI2, true );
+                context.fill();
+
+            }
+
+        } );
+
+        for ( var i = 0; i < 100; i ++ ) {
+
+            particle = new THREE.Sprite( material );
+            particle.position.x = Math.random() * 300 - 1;
+            particle.position.y = Math.random() * 300 - 1;
+            particle.position.z = Math.random() * 300 - 1;
+            particles.push(particle);
+            scene.add( particle );
+            var w = new Wiggle(1000, 0.1, 3);
+            pWiggles.push(w);
+        }
+
+        renderer = new THREE.WebGLRenderer( { antialias: true } );
+        //renderer.autoClear = false;
+        renderer.setClearColor( 0x2a2a2a, 0.5 ); // the default
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        var canvas = renderer.domElement;
+        container.appendChild( canvas );
+
+        vertices.push(new THREE.Vector3(0, 0, 0));
+
+        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+        document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+        document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+
+        //
+
+       // window.addEventListener( 'resize', onWindowResize, false );
+
+    }
+    function animate() {
+
+        requestAnimationFrame( animate );
+
+        render();
+
+    }
+
+    function render() {
+        stats.begin();
+        var geometry = new THREE.Geometry();
+        var vertex = new THREE.Vector3( pPos[0], pPos[1], pPos[2] );
+
+        var pos = wiggle.getNum();
+        var vertex2 = new THREE.Vector3( pos[0], pos[1], pos[2] );
+
+        //vertices.push(vertex);
+        vertices.push(vertex2);
+
+        geometry.vertices = vertices;
+        geometry.colors = colors.slice(0, vertices.length);
+
+        scene.remove( line );
+        line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { linewidth: 3, vertexColors: THREE.VertexColors/* , opacity: Math.random()*/ } ) );
+        scene.add( line );
+
+        if (vertices.length > verticeNum) {
+            vertices.shift();
+        }
+
+        pPos = pos;
+
+        scene.remove( sphere );
+        var geometry1 = new THREE.SphereGeometry( amp/2, 12, 12, 0 , Math.PI*2 );
+        var material = new THREE.MeshLambertMaterial ( {shading: THREE.FlatShading, wireframe :true, opacity: 0.3, transparent:true, wireframeLinewidth: 6, } );
+        sphere = new THREE.Mesh( geometry1, material );
+        scene.add( sphere );
+
+        for (var i = 0 ; i < 100 ; i++) {
+            var p = pWiggles[i].getNum();
+            particles[i].position.x = p[0];
+            particles[i].position.y = p[1];
+            particles[i].position.z = p[2];
+        }
+
+        var timer = Date.now() * 0.0005;
+
+        camera.position.x = Math.cos( timer ) * cameraDistance;
+        camera.position.z = Math.sin( timer ) * cameraDistance;
+
+        lights[0].position.x = camera.position.x;
+        lights[0].position.z = camera.position.z;
+        camera.lookAt( scene.position );
+
+
+        stats.end();
+        renderer.render( scene, camera );
+
+    }
+
+    function onDocumentMouseMove(event) {
+
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+
+        amp = dist([windowHalfX,windowHalfY], [mouseX, mouseY]);
+        wiggle.amp = amp;
+
+    }
+
+    function onDocumentTouchStart( event ) {
+
+        if ( event.touches.length > 1 ) {
+
+            event.preventDefault();
+
+            mouseX = event.touches[ 0 ].pageX;
+            mouseY = event.touches[ 0 ].pageY;
+
+            amp = dist([windowHalfX,windowHalfY], [mouseX, mouseY])*2;
+            wiggle.amp = amp;
+
+        }
+
+    }
+
+    function onDocumentTouchMove( event ) {
+
+        if ( event.touches.length == 1 ) {
+
+            event.preventDefault();
+
+            mouseX = event.touches[ 0 ].pageX;
+            mouseY = event.touches[ 0 ].pageY;
+            
+            amp = dist([windowHalfX,windowHalfY], [mouseX, mouseY])*2;
+            wiggle.amp = amp;
+
+        }
+
+    }
+    function dist(p1, p2) {
+        var x = p1[0] - p2[0];
+        var y = p1[1] - p2[1];
+        return Math.sqrt(x*x + y*y);
+    }
+
+</script>
+</html>
