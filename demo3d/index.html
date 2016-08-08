@@ -106,7 +106,7 @@
             }
         } );
 
-        for ( var i = 0; i < 50; i ++ ) {
+        for ( var i = 0; i < 100; i ++ ) {
 
             particle = new THREE.Sprite( material );
             particle.position.x = Math.random() * 300 - 1;
@@ -202,7 +202,7 @@
             var gline2 = new THREE.Geometry();
             var gline1Point2 = new THREE.Vector3( wiggle.p2[0], wiggle.p2[1], wiggle.p2[2] );
             var gline1Point3 = new THREE.Vector3( wiggle.p3[0], wiggle.p3[1], wiggle.p3[2] );
-            gline2.vertices = [gline1Point0, gline1Point1];
+            gline2.vertices = [gline1Point2, gline1Point3];
             line2 = new THREE.Line( gline2, new THREE.LineBasicMaterial( { linewidth: 1, color:0xffffff , opacity: 0.5 } ) );
             scene.add(line2);
 
