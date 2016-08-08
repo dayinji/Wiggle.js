@@ -41,7 +41,6 @@
 		}
 		var d03 = dist(this.p0, this.p3);
 		var d02 = dist(this.p0, this.p2);
-		var k = (this.p0[1] - this.p2[1]) / (this.p0[0] - this.p2[0]);
 		var p1Dist = d02;
 		for (var i = 0 ; i < this.dimen ; i++) {
 			this.p1[i] = this.p0[i] + p1Dist/d02*(this.p0[i] - this.p2[i]);
