@@ -39,8 +39,8 @@
 			this.p0[i] = this.p3[i];
 			this.p3[i] = (Math.random()-0.5)*this.amp;
 		}
-		var d03 = dist(this.p0, this.p3);
-		var d02 = dist(this.p0, this.p2);
+		var d03 = this.dist(this.p0, this.p3);
+		var d02 = this.dist(this.p0, this.p2);
 		var p1Dist = d02;
 		for (var i = 0 ; i < this.dimen ; i++) {
 			this.p1[i] = this.p0[i] + p1Dist/d02*(this.p0[i] - this.p2[i]);
@@ -51,13 +51,14 @@
 		for (var i = 0 ; i < this.dimen ; i++) {
 			this.p2[i] = this.p3[i] + Math.cos(randNum)*p2Dist;
 		}
-
 		this.startTime = Date.now();
 	};
-	function dist(p1 ,p2) {
-		var x = p1[0]-p2[0];
-		var y = p1[1]-p2[1];
-		return Math.sqrt(x*x + y*y);
-	}
+	Wiggle.prototype.dist = function(p1, p2) {
+		var result = 0;
+		for (var i = 0 ; i < this.dimen ; i++) {
+			result += (p1[i] - p2[i])*(p1[i] - p2[i]);
+		}
+		return Math.sqrt(result);
+	};
 	window['Wiggle'] = Wiggle;
 })();
