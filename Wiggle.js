@@ -1,8 +1,8 @@
 ;(function () {
-	var Wiggle = function(amp, freq) {
+	var Wiggle = function(amp, freq, dimen) {
 		this.amp = amp;
 		this.freq = freq;
-		this.dimen = 2;
+		this.dimen = dimen;
 		this.startTime = Date.now();
 		this.p0 = [];
 		this.p1 = [];
@@ -43,13 +43,15 @@
 		var d02 = dist(this.p0, this.p2);
 		var k = (this.p0[1] - this.p2[1]) / (this.p0[0] - this.p2[0]);
 		var p1Dist = d02;
-		this.p1[0] = this.p0[0] + p1Dist/d02*(this.p0[0] - this.p2[0]);
-		this.p1[1] = this.p0[1] + p1Dist/d02*(this.p0[1] - this.p2[1]);
+		for (var i = 0 ; i < this.dimen ; i++) {
+			this.p1[i] = this.p0[i] + p1Dist/d02*(this.p0[i] - this.p2[i]);
+		}
 
 		var p2Dist = d03*Math.random();
 		var randNum = Math.random()*Math.PI*2;
-		this.p2[0] = this.p3[0] + Math.cos(randNum)*p2Dist;
-		this.p2[1] = this.p3[1] + Math.sin(randNum)*p2Dist;
+		for (var i = 0 ; i < this.dimen ; i++) {
+			this.p2[i] = this.p3[i] + Math.cos(randNum)*p2Dist;
+		}
 
 		this.startTime = Date.now();
 	};
