@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Wiggle.js Demp -By dayinji</title>
+    <title>Wiggle.js Demo2d -By dayinji</title>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
     <style>
         html,body {
@@ -18,18 +18,40 @@
             background: #2a2a2a;
             display: block;
         }
+        #data-wrap {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+        }
+        .data {
+            font-size: 16px;
+            color: white;
+        }
     </style>
 </head>
 <body>
     <canvas id="canvas" width="900" height="500">
     </canvas>
+    <div id="data-wrap">
+        <p class="data" id="x"></p>
+        <p class="data" id="y"></p>
+    </div>
 </body>
-<script src="../../Wiggle.js"></script>
+<script src="Wiggle.js"></script>
 <script>
     var canvas = document.getElementById('canvas');
     var w = document.body.clientWidth;
     var h = document.body.clientHeight;
-    console.log(w, h);
+
+    var amp = 250;
+    var freq = 2;
+    var wiggle = new Wiggle(amp, freq, 2);
+    var x = 0;
+    var ppoint = [0, 0];
+
+    var xHtml = document.getElementById("x");
+    var yHtml = document.getElementById("y");
+
     canvas.style.width = "" + w + "px";
     canvas.style.height = "" + h + "px";
     canvas.width = w;
@@ -39,12 +61,9 @@
         ctx = canvas.getContext('2d');
     }
 
-    var amp = 250;
-    var freq = 2;
-    var wiggle = new Wiggle(amp, freq, 2);
-    var x = 0;
-    var ppoint = [0, 0];
     function anim() {
+        var num = wiggle.getNum();
+        setHtmlData(num);
         ctx.strokeStyle='rgba(18, 252, 255, 0.1)';
         ctx.beginPath();
         ctx.arc(w/2, h/2, amp/2, 0, 360);
@@ -52,7 +71,6 @@
         ctx.closePath();
         ctx.fillStyle = "rgba(46, 46, 46, 0.1)";
         ctx.fillRect(0, 0, w, h);
-        var num = wiggle.getNum();
         ctx.strokeStyle='#fff';
         ctx.lineWidth=2;
         ctx.lineCap='square';
@@ -63,25 +81,61 @@
         ctx.closePath();
         ppoint[0] = num[0];
         ppoint[1] = num[1];
+        drawControl();
         requestAnimationFrame(anim);
     }
+    function setHtmlData(data) {
+        xHtml.innerHTML = "x: " + Math.round(data[0]);
+        yHtml.innerHTML = "y: " + Math.round(data[1]);
+    }
+    function drawControl() {
+        ctx.fillStyle = "#ff4444";
+        ctx.beginPath();
+        ctx.arc(wiggle.p0[0]+w/2, wiggle.p0[1]+h/2, 3, 0, 360);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(wiggle.p1[0]+w/2, wiggle.p1[1]+h/2, 3, 0, 360);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(wiggle.p2[0]+w/2, wiggle.p2[1]+h/2, 3, 0, 360);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(wiggle.p3[0]+w/2, wiggle.p3[1]+h/2, 3, 0, 360);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle='#888888';
+        ctx.lineWidth=1;
+        ctx.lineCap='square';
+        ctx.beginPath();
+        ctx.moveTo(wiggle.p0[0]+w/2, wiggle.p0[1]+h/2);
+        ctx.lineTo(wiggle.p1[0]+w/2, wiggle.p1[1]+h/2);
+        ctx.stroke();
+        ctx.closePath();
+        ctx.beginPath();
+        ctx.moveTo(wiggle.p2[0]+w/2, wiggle.p2[1]+h/2);
+        ctx.lineTo(wiggle.p3[0]+w/2, wiggle.p3[1]+h/2);
+        ctx.stroke();
+        ctx.closePath();
+    }
     anim();
+
     canvas.addEventListener("touchmove", touchMove, false);
-    canvas.addEventListener("mousemove", mouseMove, false);
+    canvas.addEventListener( 'mousemove', mouseMove, false );
     function touchMove(e) {
         e.preventDefault();
-        var el = document.getElementsByTagName("canvas")[0];
-        var ctx = el.getContext("2d");
         var touches = e.changedTouches;
         amp = dist([w/2, h/2], [touches[0].pageX, touches[0].pageY])*2;
         wiggle.amp = amp;
     }
-    function mouseMove(e) {
-        e.preventDefault();
-        var el = document.getElementsByTagName("canvas")[0];
-        var ctx = el.getContext("2d");
-        var touches = e.changedTouches;
-        amp = dist([w/2, h/2], [e.pageX,e.pageY])*2;
+
+    function mouseMove(event) {
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+        amp = dist([w/2, h/2], [mouseX, mouseY])*2;
         wiggle.amp = amp;
     }
 
