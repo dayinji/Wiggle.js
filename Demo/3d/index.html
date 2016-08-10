@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Wiggle.js Demp -By dayinji</title>
+    <title>Wiggle.js Demo 3d -By dayinji</title>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
     <style>
         html,body {
@@ -22,7 +22,7 @@
 </head>
 <body>
 </body>
-<script src="../../Wiggle.js"></script>
+<script src="Wiggle.js"></script>
 <script src="js/three.min.js"></script>
 <script src="js/CanvasRenderer.js"></script>
 <script src="js/Projector.js"></script>
@@ -31,7 +31,6 @@
     var amp = 300;
     var wiggle = new Wiggle(amp, 2, 3);
     var pPos = [0, 0, 0];
-
 
     var mouseX = 0, mouseY = 0,
     cameraDistance = 500,
@@ -49,6 +48,10 @@
     particles = [],
     pWiggles = [],
     sphere;
+
+    var line1, line2, pcontrol;
+    var p0 = [0, 0, 0], p1 = [0, 0, 0], p2 = [0, 0, 0], p3 = [0, 0, 0];
+    var controlPointMaterial;
 
     var startTime = Date.now();
 
@@ -88,17 +91,18 @@
 
         var PI2 = Math.PI * 2;
 
-        var material = new THREE.SpriteMaterial( {
+        controlPointMaterial = new THREE.PointsMaterial( {
+            color: 0xff0000,
+            size: 5
+        } );
 
+        var material = new THREE.SpriteMaterial( {
             color: 0xffffff,
             program: function ( context ) {
-
                 context.beginPath();
                 context.arc( 0, 0, 3, 0, PI2, true );
                 context.fill();
-
             }
-
         } );
 
         for ( var i = 0; i < 100; i ++ ) {
@@ -127,9 +131,6 @@
         document.addEventListener( 'touchstart', onDocumentTouchStart, false );
         document.addEventListener( 'touchmove', onDocumentTouchMove, false );
 
-        //
-
-       // window.addEventListener( 'resize', onWindowResize, false );
 
     }
     function animate() {
@@ -155,19 +156,22 @@
         geometry.colors = colors.slice(0, vertices.length);
 
         scene.remove( line );
-        line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { linewidth: 3, vertexColors: THREE.VertexColors/* , opacity: Math.random()*/ } ) );
+        line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { linewidth: 2, vertexColors: THREE.VertexColors/* , opacity: Math.random()*/ } ) );
         scene.add( line );
 
         if (vertices.length > verticeNum) {
-            vertices.shift();
+            var a = vertices.shift();
+            a = null;
         }
 
         pPos = pos;
 
         scene.remove( sphere );
         var geometry1 = new THREE.SphereGeometry( amp/2, 12, 12, 0 , Math.PI*2 );
-        var material = new THREE.MeshLambertMaterial ( {shading: THREE.FlatShading, wireframe :true, opacity: 0.3, transparent:true, wireframeLinewidth: 6, } );
+        var material = new THREE.MeshLambertMaterial ( {shading: THREE.FlatShading, wireframe :true, opacity: 0.3, transparent:true, wireframeLinewidth: 2, } );
+        var stemp = sphere;
         sphere = new THREE.Mesh( geometry1, material );
+        stemp = null;
         scene.add( sphere );
 
         for (var i = 0 ; i < 100 ; i++) {
@@ -176,6 +180,35 @@
             particles[i].position.y = p[1];
             particles[i].position.z = p[2];
         }
+
+        //draw control bezier
+        if (wiggle.p1[0] != p1[0]) {
+            scene.remove( line1 );
+            scene.remove( line2 );
+            scene.remove( pcontrol );
+            line1 = null;
+            line2 = null;
+            pcontrol = null;
+            var gline1 = new THREE.Geometry();
+            var gline1Point0 = new THREE.Vector3( wiggle.p0[0], wiggle.p0[1], wiggle.p0[2] );
+            var gline1Point1 = new THREE.Vector3( wiggle.p1[0], wiggle.p1[1], wiggle.p1[2] );
+            gline1.vertices = [gline1Point0, gline1Point1];
+            line1 = new THREE.Line( gline1, new THREE.LineBasicMaterial( { linewidth: 1, color:0xffffff , opacity: 0.5 } ) );
+            scene.add(line1);
+            var gline2 = new THREE.Geometry();
+            var gline1Point2 = new THREE.Vector3( wiggle.p2[0], wiggle.p2[1], wiggle.p2[2] );
+            var gline1Point3 = new THREE.Vector3( wiggle.p3[0], wiggle.p3[1], wiggle.p3[2] );
+            gline2.vertices = [gline1Point2, gline1Point3];
+            line2 = new THREE.Line( gline2, new THREE.LineBasicMaterial( { linewidth: 1, color:0xffffff , opacity: 0.5 } ) );
+            scene.add(line2);
+
+            var cps = new THREE.Geometry();
+            cps.vertices.push(new THREE.Vector3(wiggle.p1[0], wiggle.p1[1], wiggle.p1[2]));
+            cps.vertices.push(new THREE.Vector3(wiggle.p2[0], wiggle.p2[1], wiggle.p2[2]));
+            pcontrol = new THREE.Points(cps, controlPointMaterial);
+            scene.add( pcontrol );
+        } 
+
 
         var timer = Date.now() * 0.0005;
 
