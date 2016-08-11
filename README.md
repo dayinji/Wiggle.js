@@ -13,6 +13,12 @@ New a Wiggle obecjt and set amp and freq
     
 ##Demo
 
+DEMO1-1d：https://dayinji.github.io/Wiggle.js/demo1d/
+
+DEMO2-2d：https://dayinji.github.io/Wiggle.js/demo2d/
+
+DEMO3-3d：https://dayinji.github.io/Wiggle.js/demo3d/
+
 ![](http://i1.piimg.com/567571/26b16d6d8b6d47ad.gif)
 
 ![](http://i1.piimg.com/567571/92f1e2f051aa7548.gif)
